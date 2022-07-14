@@ -33,16 +33,24 @@ router.get("/tableNumber", function (req, res, next) {
 });
 
 router.post("/book", async function (req, res, next) {
-    let tableNumber = req.body.tableNumber;
     let dateTime = req.body.dateTime;
     dateTime = moment(dateTime).format('YYYY-MM-DD HH:mm');
     let duration = req.body.duration;
+    let seats = req.body.seats;
+
+    //find a table that has the correct amount of seats
+
+    //for each of them tables (smallest first) check if the dateTime is available
+
+    //if it is available, book the table
+
+    //if it is not available, check the next table
 
     console.log(req.body);
 
-    let tableAvailable = await checkTableAvailability(tableNumber, dateTime, duration);
+    let tableNumber = await findSuitableTable(dateTime, duration, seats);
 
-    if (tableAvailable) {
+    if (tableNumber > 0) {
         //generate random string for booking reference
         let bookingReference = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         console.log(bookingReference);
@@ -87,6 +95,8 @@ async function checkTableAvailability(tableNumber, dateTime, duration) {
 async function checkTableExists(tableNumber) {
     //check if table exists
     let tableExists = false;
+
+    console.log("TableNumber: " + tableNumber);
 
     let query = "SELECT * FROM Tables WHERE tableNumber = ?";
     let params = [tableNumber];
@@ -153,6 +163,34 @@ function checkDateTimeAvailabilityForDuration(rows, dateTime, duration) {
 
     console.log("dateTimeAvailable: " + dateTimeAvailable);
     return true;
+}
+
+async function findSuitableTable(dateTime, duration, seats) {
+    //find a table that has the correct amount of seats
+
+    //for each of them tables (smallest first) check if the dateTime is available
+
+    //if it is available, book the table
+
+    //if it is not available, check the next table
+
+    let tableNumber = 0;
+
+    let query = "SELECT * FROM Tables WHERE Seats >= ?";
+    let params = [seats];
+
+    let rows = await getAllPromise(query, params);
+
+    for (let i = 0; i < rows.length; i++) {
+        console.log(rows[i]);
+        let tableNumber = rows[i].TableNumber;
+        let tableAvailable = await checkTableAvailability(tableNumber, dateTime, duration);
+
+        if (tableAvailable) {
+            return tableNumber;
+        }
+    }
+    return 0;
 }
 
 function getAllPromise(query, params) {
