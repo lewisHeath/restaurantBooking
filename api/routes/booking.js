@@ -176,7 +176,7 @@ async function findSuitableTable(dateTime, duration, seats) {
 
     let tableNumber = 0;
 
-    let query = "SELECT * FROM Tables WHERE Seats >= ?";
+    let query = "SELECT * FROM Tables WHERE Seats >= ? ORDER BY Seats ASC";
     let params = [seats];
 
     let rows = await getAllPromise(query, params);
