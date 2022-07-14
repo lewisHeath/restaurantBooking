@@ -61,10 +61,12 @@ router.post("/book", async function (req, res, next) {
             console.log("Table Booked!");
         });
         res.json({
+            "status": "ok",
             "bookingReference": bookingReference
         });
     } else {
         res.json({
+            "status": "error",
             "error": "Table is not available"
         });
     }

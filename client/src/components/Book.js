@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import moment from 'moment';
+import { useNavigate } from 'react-router-dom';
 
+function Book({ setBookingReference }) {
 
-function Book() {
+    const navigate = useNavigate();
 
-    const [seats, setSeats] = React.useState(0);
-    const [date, setDate] = React.useState(new Date());
-    const [time, setTime] = React.useState(new Date());
-    const [duration, setDuration] = React.useState(1);
+    const [seats, setSeats] = useState(1);
+    const [date, setDate] = useState(moment().format('YYYY-MM-DD'));
+    const [time, setTime] = useState(moment().format('HH:mm'));
+    const [duration, setDuration] = useState(1);
 
     function handleSeatChange(event) {
         setSeats(event.target.value);
@@ -23,6 +26,11 @@ function Book() {
     function handleDurationChange(event) {
         setDuration(event.target.value);
     }
+
+    useEffect(() => {
+        console.log("date: " + date);
+        console.log("time: " + time);
+    }, []);
 
     async function handleClick() {
         console.log("You have selected " + seats + " seats");
@@ -47,65 +55,66 @@ function Book() {
         //get response
         const data = await response.json();
         console.log(data);
+        //if response is ok, redirect to booking page
+        if (data.status === "ok") {
+            setBookingReference(data.bookingReference);
+            console.log("Booking reference: " + data.bookingReference);
+            //go to /booking without using window.href
+            navigate('/booked');
+        } else {
+            alert("Something went wrong");
+        }
     }
 
     return (
         <div className="container">
             <div className="row">
-                <div className="col-md-3">
-                    <div className="card">
-                        <div className="card-body">
-                            <h5 className="card-title">Choose Amount of Seats</h5>
-                            <p className="card-text">
-                                <select className="form-control" value={seats} onChange={handleSeatChange}>
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option>5</option>
-                                    <option>6</option>
-                                    <option>7</option>
-                                    <option>8</option>
-                                    <option>9</option>
-                                    <option>10</option>
-                                </select>
-                            </p>
-                        </div>
+                <div className="card">
+                    <div className="card-body">
+                        <p className="card-title">Seats</p>
+                        <p className="card-text">
+                            <select className="form-control" value={seats} onChange={handleSeatChange}>
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5</option>
+                                <option>6</option>
+                                <option>7</option>
+                                <option>8</option>
+                                <option>9</option>
+                                <option>10</option>
+                            </select>
+                        </p>
                     </div>
                 </div>
-                <div className="col-md-3">
-                    <div className="card">
-                        <div className="card-body">
-                            <h5 className="card-title">Choose Date</h5>
-                            <p className="card-text">
-                                <input type="date" className="form-control" value={date} onChange={handleDateChange}/>
-                            </p>
-                        </div>
+                <div className="card">
+                    <div className="card-body">
+                        <p className="card-title">Date</p>
+                        <p className="card-text">
+                            <input type="date" className="form-control" value={date} onChange={handleDateChange}/>
+                        </p>
                     </div>
                 </div>
-                <div className="col-md-3">
-                    <div className="card">
-                        <div className="card-body">
-                            <h5 className="card-title">Choose Time</h5>
-                            <p className="card-text">
-                                <input type="time" className="form-control" value={time} onChange={handleTimeChange}/>
-                            </p>
-                        </div>
+                <div className="card">
+                    <div className="card-body">
+                        <p className="card-title">Time</p>
+                        <p className="card-text">
+                            <input type="time" className="form-control" value={time} step="3600" onChange={handleTimeChange}/>
+                        </p>
                     </div>
                 </div>
-                <div className="col-md-3">
-                    <div className="card">
-                        <div className="card-body">
-                            <h5 className="card-title">Choose Duration</h5>
-                            <p className="card-text">
-                                <select className="form-control" value={duration} onChange={handleDurationChange}>
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                </select>
-                            </p>
-                        </div>
+                <div className="card">
+                    <div className="card-body">
+                        <p className="card-title">Duration</p>
+                        <p className="card-text">
+                            <select className="form-control" value={duration} onChange={handleDurationChange}>
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                            </select>
+                        </p>
                     </div>
                 </div>
             </div>
